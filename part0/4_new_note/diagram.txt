@@ -1,0 +1,17 @@
+title new note
+
+note over user:
+user has entered the notes page
+end note
+
+user->browser: write a note in the text field
+user->browser: click "save" button
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
+server->browser: 302 redirect to https://studies.cs.helsinki.fi/exampleapp/notes
+
+note over browser:
+browser fetches the notes page
+https://studies.cs.helsinki.fi/exampleapp/notes
+and everything continues as in the example
+sequence diagram
+end note

@@ -1,0 +1,17 @@
+title new note SPA
+
+note over user:
+user has entered the SPA notes page
+end note
+
+user->browser: write a note in the text field
+user->browser: click "save" button
+
+note over browser:
+browser executes an event handler
+that injects the new note to the browser display,
+and sends the note to the backend
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server->browser: 201 created
