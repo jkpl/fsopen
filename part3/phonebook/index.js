@@ -1,3 +1,4 @@
+const generateId = require('./genid');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -26,10 +27,6 @@ let persons = [
     "id": 4
   }
 ];
-
-function generateId() {
-  return Math.floor(Math.random() * 1000000);
-}
 
 app.use(express.json());
 app.use(express.static('build'))
