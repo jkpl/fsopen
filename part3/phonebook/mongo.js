@@ -1,3 +1,4 @@
+/* global process */
 const mongoose = require('mongoose');
 
 if (process.argv.length < 3) {
@@ -25,14 +26,14 @@ if (personName) {
     name: personName,
     number: personNumber,
   });
-  
-  person.save().then(result => {
+
+  person.save().then(() => {
     console.log(`added ${personName} number ${personNumber} to phonebook`);
     mongoose.connection.close();
-  });  
+  });
 } else {
   Person.find({}).then((persons) => {
-    console.log('phonebook:')
+    console.log('phonebook:');
     persons.forEach((person) => {
       console.log(`${person.name} ${person.number}`);
     });

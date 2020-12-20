@@ -1,3 +1,4 @@
+/* global process */
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,7 +7,7 @@ const Person = require('./models/person');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.static('build'))
+app.use(express.static('build'));
 app.use(express.json());
 app.use(cors());
 app.use(morgan('tiny'));
@@ -33,7 +34,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     .findById(request.params.id)
     .then((person) => {
       if (person) {
-        response.json(person)        
+        response.json(person);
       } else {
         response.status(404).end();
       }
@@ -44,7 +45,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.delete('/api/persons/:id', (request, response, next) => {
   Person
     .findByIdAndRemove(request.params.id)
-    .then((result) => response.status(204).end())
+    .then(() => response.status(204).end())
     .catch((err) => next(err));
 });
 
@@ -57,7 +58,7 @@ app.post('/api/persons', (request, response, next) => {
   person
     .save()
     .then((savedPerson) => response.json(savedPerson))
-    .catch((err) => next(err))
+    .catch((err) => next(err));
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -65,7 +66,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: request.body.name,
     number: request.body.number,
   };
-  
+
   Person
     .findByIdAndUpdate(request.params.id, person, { new: true })
     .then((updatedPerson) => response.json(updatedPerson))
@@ -92,5 +93,5 @@ function errorHandler(err, request, response, next) {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`);
 });
