@@ -27,7 +27,7 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const noteFormVisibilityRef = useRef()
-  
+
   const loginState = {
     username,
     setUsername,
