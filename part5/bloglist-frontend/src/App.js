@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Login from './components/Login'
 import UserDetails from './components/UserDetails'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -24,23 +25,14 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+
+  const noteFormVisibilityRef = useRef()
   
   const loginState = {
     username,
     setUsername,
     password,
     setPassword,
-  }
-  const blogCreateState = {
-    title,
-    setTitle,
-    author,
-    setAuthor,
-    url,
-    setUrl
   }
 
   if (user === null) {
@@ -78,14 +70,11 @@ const App = () => {
     setUser(null)
   }
 
-  async function handleBlogCreate(e) {
-    e.preventDefault()
-    const blog = {title, author, url}
+  async function handleBlogCreate(blog) {
     await blogService.create(blog, requestConfig)
     setBlogs([...blogs, blog])
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    noteFormVisibilityRef.current.toggleVisibility()
+    return true
   }
 
   if (user === null) {
@@ -100,8 +89,10 @@ const App = () => {
   return (
     <div>
       <UserDetails handleLogout={handleLogout} user={user} />
-      <h2>create new</h2>
-      <BlogForm handleBlogCreate={handleBlogCreate} state={blogCreateState} />
+      <Togglable buttonLabel="new note" ref={noteFormVisibilityRef}>
+        <h2>create new</h2>
+        <BlogForm createBlog={handleBlogCreate} />
+      </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
