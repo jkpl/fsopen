@@ -26,6 +26,10 @@ function errorHandler(err, request, response, next) {
 const app = express();
 app.use(cors());
 app.use(express.json());
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./testing.js')
+  app.use('/api/testing', testingRouter)
+}
 app.use('/api/login', auth.login);
 app.use('/api/users', require('./users'));
 app.use(auth.authorize);
