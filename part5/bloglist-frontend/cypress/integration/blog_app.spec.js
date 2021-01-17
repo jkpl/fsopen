@@ -38,7 +38,13 @@ describe('Blog app', function() {
     })
   })
 
-  describe.only('When logged in', function() {
+  describe('When logged in', function() {
+    const blogData = {
+      title: 'Hello world',
+      author: 'Pasi',
+      url: 'http://example.org/'
+    }
+
     beforeEach(function() {
       cy.request('POST', 'http://localhost:3001/api/login', user)
         .then((response) => {
@@ -48,12 +54,6 @@ describe('Blog app', function() {
     })
 
     it('A blog can be created', function() {
-      const blogData = {
-        title: 'Hello world',
-        author: 'Pasi',
-        url: 'http://example.org/'
-      }
-
       cy.contains('new blog').click()
       cy.get('[name="Title"]').type(blogData.title)
       cy.get('[name="Author"]').type(blogData.author)
@@ -62,6 +62,37 @@ describe('Blog app', function() {
 
       cy.contains(blogData.title)
       cy.contains(blogData.author)
+      cy.contains('0 likes')
+    })
+
+    describe('When a blog has been created', function() {
+      beforeEach(function() {
+        cy.request({
+          method: 'POST',
+          url: 'http://localhost:3001/api/blogs',
+          body: blogData,
+          headers: {
+            'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedUserDetails')).token}`
+          },
+        }).then(() => {
+          cy.visit('http://localhost:3000')
+        })
+      })
+
+      it('A blog can be liked', function() {
+        cy.contains('like').click()
+        cy.contains('1 likes')
+
+        cy.contains('like').click()
+        cy.contains('2 likes')
+      })
+
+      it('A blog can be removed', function() {
+        cy.contains('remove').click()
+
+        cy.contains(blogData.title).should('not.exist')
+        cy.contains(blogData.author).should('not.exist')
+      })
     })
   })
 })
