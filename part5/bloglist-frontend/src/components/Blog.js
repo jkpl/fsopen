@@ -25,19 +25,19 @@ const Blog = ({ likeAction, removeAction, blogData }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <div>
+    <div style={blogStyle} className="blog-entry">
+      <div className="blog-info">
         <a href={blog.url}>
-        "{blog.title}"
+        &quot;{blog.title}&quot;
         </a> by {blog.author}
       </div>
-      <div>
+      <div className="blog-likes">
         {blog.likes || 0} likes <button onClick={handleLikeClick}>like</button>
       </div>
-      <div>
+      <div className="blog-user">
         added by {blog.user.name}
       </div>
-      <div>
+      <div className="blog-remove">
         <button onClick={handleRemoveClick}>remove</button>
       </div>
     </div>

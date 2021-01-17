@@ -1,9 +1,31 @@
+Cypress.Commands.add('login', (user) => {
+  cy.request('POST', 'http://localhost:3001/api/login', user)
+    .then((response) => {
+      localStorage.setItem('loggedUserDetails', JSON.stringify(response.body))
+      cy.visit('http://localhost:3000')
+    })
+})
+
+Cypress.Commands.add('createBlog', (blog) => {
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:3001/api/blogs',
+    body: blog,
+    headers: {
+      'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedUserDetails')).token}`
+    },
+  }).then(() => {
+    cy.visit('http://localhost:3000')
+  })
+})
+
 describe('Blog app', function() {
   const user = {
     username: 'timo',
-    name: 'Timo Simo',
+    name: 'Timo',
     password: 'tim0',
   }
+
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
     cy.request('POST', 'http://localhost:3001/api/users', user)
@@ -39,59 +61,81 @@ describe('Blog app', function() {
   })
 
   describe('When logged in', function() {
-    const blogData = {
-      title: 'Hello world',
-      author: 'Pasi',
-      url: 'http://example.org/'
-    }
+    const blogData = [
+      {
+        title: 'Hello world',
+        author: 'Simo',
+        url: 'http://example.org/',
+        likes: 4,
+      },
+      {
+        title: 'Goodbye world',
+        author: 'Ismo',
+        url: 'http://example.com/',
+        likes: 8
+      },
+      {
+        title: 'Example',
+        author: 'Pekka',
+        url: 'http://example.net',
+        likes: 6,
+      }
+    ]
 
     beforeEach(function() {
-      cy.request('POST', 'http://localhost:3001/api/login', user)
-        .then((response) => {
-          localStorage.setItem('loggedUserDetails', JSON.stringify(response.body))
-          cy.visit('http://localhost:3000')
-        })
+      cy.login(user)
     })
 
     it('A blog can be created', function() {
       cy.contains('new blog').click()
-      cy.get('[name="Title"]').type(blogData.title)
-      cy.get('[name="Author"]').type(blogData.author)
-      cy.get('[name="URL"]').type(blogData.url)
+      cy.get('[name="Title"]').type(blogData[0].title)
+      cy.get('[name="Author"]').type(blogData[0].author)
+      cy.get('[name="URL"]').type(blogData[0].url)
       cy.get('#submitblog').click()
 
-      cy.contains(blogData.title)
-      cy.contains(blogData.author)
+      cy.contains(blogData[0].title)
+      cy.contains(blogData[0].author)
       cy.contains('0 likes')
     })
 
-    describe('When a blog has been created', function() {
+    describe('When blogs have been created', function() {
       beforeEach(function() {
-        cy.request({
-          method: 'POST',
-          url: 'http://localhost:3001/api/blogs',
-          body: blogData,
-          headers: {
-            'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedUserDetails')).token}`
-          },
-        }).then(() => {
-          cy.visit('http://localhost:3000')
-        })
+        blogData.forEach((b) => cy.createBlog(b))
       })
 
-      it('A blog can be liked', function() {
-        cy.contains('like').click()
-        cy.contains('1 likes')
+      function findBlogEntry(title) {
+        return cy.contains(title).parent().parent('.blog-entry')
+      }
 
-        cy.contains('like').click()
-        cy.contains('2 likes')
+      it('A blog can be liked', function() {
+        findBlogEntry(blogData[0].title).contains('like').click()
+        findBlogEntry(blogData[0].title).contains('5 likes')
+
+        findBlogEntry(blogData[0].title).contains('like').click()
+        findBlogEntry(blogData[0].title).contains('6 likes')
       })
 
       it('A blog can be removed', function() {
-        cy.contains('remove').click()
+        cy.on('window:confirm', () => true)
 
-        cy.contains(blogData.title).should('not.exist')
-        cy.contains(blogData.author).should('not.exist')
+        findBlogEntry(blogData[0].title).contains('remove').click()
+
+        cy.contains(blogData[0].title).should('not.exist')
+        cy.contains(blogData[0].author).should('not.exist')
+      })
+
+      it('Blogs are sorted by likes', function() {
+        cy.get('.blog-likes').then((blogElements) => {
+          const likesInPage = blogElements.map(
+            (i, el) => Number.parseInt(el.textContent.split(' ')[0], 10)
+          ).get()
+
+          const likesSorted = [... likesInPage ]
+          likesSorted.sort()
+          likesSorted.reverse()
+
+          expect(likesInPage).to.eql(likesSorted)
+        })
       })
     })
   })
