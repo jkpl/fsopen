@@ -71,10 +71,17 @@ const App = () => {
   }
 
   async function handleBlogCreate(blog) {
-    await blogService.create(blog, requestConfig)
-    setBlogs([...blogs, blog])
+    const createdBlog = await blogService.create(blog, requestConfig)
+    setBlogs([...blogs, createdBlog])
     noteFormVisibilityRef.current.toggleVisibility()
     return true
+  }
+
+  async function likeBlog(blogData) {
+    const blog = { ...blogData }
+    blog.likes = blog.likes + 1
+    const updatedBlog = await blogService.update(blog, requestConfig)
+    return updatedBlog
   }
 
   if (user === null) {
@@ -95,7 +102,7 @@ const App = () => {
       </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blogData={blog} likeAction={likeBlog} />
       )}
     </div>
   )
