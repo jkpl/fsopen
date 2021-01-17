@@ -18,6 +18,11 @@ function reqConfig(user) {
   }
 }
 
+function sortByLikes(bls) {
+  bls.sort((b1, b2) => b2.likes - b1.likes)
+  return bls
+}
+
 let requestConfig = null
 
 const App = () => {
@@ -45,7 +50,7 @@ const App = () => {
 
   async function getAllBlogs(config) {
     const bls = await blogService.getAll(config)
-    setBlogs(bls)
+    setBlogs(sortByLikes(bls))
   }
 
   useEffect(() => {
@@ -72,7 +77,7 @@ const App = () => {
 
   async function handleBlogCreate(blog) {
     const createdBlog = await blogService.create(blog, requestConfig)
-    setBlogs([...blogs, createdBlog])
+    setBlogs(sortByLikes([...blogs, createdBlog]))
     noteFormVisibilityRef.current.toggleVisibility()
     return true
   }
@@ -86,7 +91,7 @@ const App = () => {
 
   async function removeBlog(blogData) {
     await blogService.remove(blogData.id, requestConfig)
-    setBlogs(blogs.filter((b) => b.id !== blogData.id))
+    setBlogs(sortByLikes(blogs.filter((b) => b.id !== blogData.id)))
   }
 
   if (user === null) {
