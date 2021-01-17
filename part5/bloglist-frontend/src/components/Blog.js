@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ likeAction, blogData }) => {
+const Blog = ({ likeAction, removeAction, blogData }) => {
   const [blog, setBlog] = useState(blogData)
 
   const blogStyle = {
@@ -17,6 +17,13 @@ const Blog = ({ likeAction, blogData }) => {
     setBlog(nextBlog)
   }
 
+  async function handleRemoveClick(e) {
+    e.preventDefault()
+    if (window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`)) {
+      removeAction(blog)
+    }
+  }
+
   return (
     <div style={blogStyle}>
       <div>
@@ -29,6 +36,9 @@ const Blog = ({ likeAction, blogData }) => {
       </div>
       <div>
         added by {blog.user.name}
+      </div>
+      <div>
+        <button onClick={handleRemoveClick}>remove</button>
       </div>
     </div>
   )
