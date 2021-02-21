@@ -2,17 +2,18 @@ const initialState = {
   text: '',
 }
 
-export const show = (text) => {
-  return {
-    type: 'SHOW_NOTIFICATION',
-    data: { text }
-  }
-}
-
-export const hide = (text) => {
-  return {
-    type: 'HIDE_NOTIFICATION',
-    data: { text }
+export const show = (text, timeoutSeconds = 5) => {
+  return async (dispatch) => {
+    dispatch({
+      type: 'SHOW_NOTIFICATION',
+      data: { text }
+    })
+    setInterval(() => {
+      dispatch({
+        type: 'HIDE_NOTIFICATION',
+        data: { text }
+      })
+    }, timeoutSeconds * 1000)
   }
 }
 

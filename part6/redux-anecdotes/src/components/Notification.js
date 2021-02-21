@@ -1,9 +1,7 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as notificationActions from '../reducers/notificationReducer'
+import { useSelector } from 'react-redux'
 
 const Notification = () => {
-  const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
 
   if (!notification.text) {
@@ -15,10 +13,6 @@ const Notification = () => {
     padding: 10,
     borderWidth: 1
   }
-
-  setInterval(() => {
-    dispatch(notificationActions.hide(notification.text))
-  }, 5000)
 
   return (
     <div style={style}>

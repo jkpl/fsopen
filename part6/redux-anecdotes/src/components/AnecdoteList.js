@@ -8,8 +8,8 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   const vote = (anecdote) => {
-    dispatch(anecdoteActions.vote(anecdote.id))
-    dispatch(notificationActions.show(`you voted "${anecdote.content}"`))
+    dispatch(anecdoteActions.vote(anecdote))
+    dispatch(notificationActions.show(`you voted "${anecdote.content}"`, 10))
   }
 
   return anecdotes.map(anecdote =>
