@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import * as notificationReducer from '../reducers/notificationReducer'
+import * as notificationActions from '../reducers/notificationReducer'
 
 const Notification = () => {
   const dispatch = useDispatch()
@@ -17,7 +17,7 @@ const Notification = () => {
   }
 
   setInterval(() => {
-    dispatch(notificationReducer.hide(notification.text))
+    dispatch(notificationActions.hide(notification.text))
   }, 5000)
 
   return (
