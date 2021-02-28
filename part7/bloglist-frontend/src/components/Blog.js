@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux'
-import * as notificationActions from '../reducers/notification'
+import * as blogActions from '../reducers/blogs'
 
-const Blog = ({ likeAction, removeAction, blogData }) => {
+const Blog = ({ blog }) => {
   const dispatch = useDispatch()
-  const [blog, setBlog] = useState(blogData)
 
   const blogStyle = {
     paddingTop: 10,
@@ -16,22 +15,13 @@ const Blog = ({ likeAction, removeAction, blogData }) => {
 
   async function handleLikeClick(e) {
     e.preventDefault()
-    try {
-      const nextBlog = await likeAction(blog)
-      setBlog(nextBlog)
-    } catch (e) {
-      dispatch(notificationActions.show(`failed to like blog: ${e.message}`, 'error'))
-    }
+    dispatch(blogActions.like(blog))
   }
 
   async function handleRemoveClick(e) {
     e.preventDefault()
     if (window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`)) {
-      try {
-        await removeAction(blog)
-      } catch (e) {
-        dispatch(notificationActions.show(`failed to delete blog: ${e.message}`, 'error'))
-      }
+      dispatch(blogActions.remove(blog))
     }
   }
 

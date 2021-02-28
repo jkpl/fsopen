@@ -8,7 +8,7 @@ export const show = (text, type, timeoutSeconds = 5) => {
       type: 'SHOW_NOTIFICATION',
       data: { text, type }
     })
-    setInterval(() => {
+    setTimeout(() => {
       dispatch({
         type: 'HIDE_NOTIFICATION',
         data: { text, type }
