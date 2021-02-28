@@ -163,7 +163,7 @@ const App = () => {
     setAnecdotes(anecdotes.concat(anecdote))
     const message = `a new anecdote ${anecdote.content}`
     setNotification(message)
-    setInterval(() => {
+    setTimeout(() => {
       setNotification('')
     }, 10000)
   }
